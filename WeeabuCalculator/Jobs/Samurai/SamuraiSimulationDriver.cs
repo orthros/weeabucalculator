@@ -305,7 +305,7 @@ namespace WeeabuCalculator
                                 where r.state == ResultState.Conclusive
                                 orderby r.score descending
                                 select (r.state, r.score, l));
-            foreach (var l in leavesScores.Take(100))
+            foreach (var l in leavesScores)
             {
                 yield return l;
             }
