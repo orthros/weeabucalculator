@@ -16,6 +16,8 @@ namespace WeeabuCalculator
             TopSimulationsToKeep = topSimulationsToKeep;
         }
 
+        public abstract void HandleArguments(string[] args);
+
         public abstract (ResultState state, float score) GetResultScore(SimulationState result);
 
         public abstract (ResultState state, float score) GetInitialResultScore(SimulationState result);

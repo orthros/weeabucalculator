@@ -49,7 +49,7 @@ namespace WeeabuCalculator
         public int WeaponDamage
         { get; set; }
 
-        public int AutoAttackDamage
+        public float AutoAttackDamage
         { get; set; }
 
         public float AutoAttackDelay

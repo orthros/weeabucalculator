@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace WeeabuCalculator
 {
+    [JobMechanics("Samurai")]
     public class SamuraiJobMechanics : JobMechanics
     {
 

@@ -178,5 +178,10 @@ namespace WeeabuCalculator
                 foreach (var n in inconclusiveSteps)
                     foreach (var r in GenerateInitialStates(n)) yield return r;
         }
+
+        public override void HandleArguments(string[] args)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

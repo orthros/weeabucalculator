@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace WeeabuCalculator
 {
+    [DeepSimulationDriver("SamuraiRotationSimulation")]
     public class SamuraiSimulationDriver : DeepSimulationDriver
     {
         public static float BUFF_WINDOW_MAX = 24;
@@ -16,9 +17,9 @@ namespace WeeabuCalculator
         private float _endTime;
         private SamuraiOpenerSimulationDriver _openerDriver;
 
-        public SamuraiSimulationDriver(JobMechanics job, float endTime) : base(job, 10)
+        public SamuraiSimulationDriver(JobMechanics job) : base(job, 10)
         {
-            _endTime = endTime;
+            _endTime = 300;
             // Shinten damage + 1 Guren per 3 hagakures
             var hagakureOpportunityDamage = 300 / 25 + ((800 / 50) / 3);
             SpecialHagakure = new PlayerAction[3];
@@ -276,6 +277,28 @@ namespace WeeabuCalculator
 
         public override IEnumerable<(ResultState state, float score, SimulationState step)> GenerateInitialStates(SimulationState root)
         {
+            var sim = new DeepSimulator(root.Player, new SamuraiOpenerSimulationDriver(root.Player.Job), Console.Out, root);
+
+            DateTime startTime = DateTime.Now;
+
+            sim.FoundTopPerformer += (s, e) =>
+            {
+                Console.WriteLine($"{(DateTime.Now - startTime):hh\\:mm\\:ss} :: New top openner found! score: {e.score}");
+            };
+
+            var timerStep = 10f;
+            var historyLength = 10;
+            var t = new System.Timers.Timer(timerStep * 1000);
+            var progressHistory = new Queue<(long progress, DateTime time)>(historyLength);
+            t.Elapsed += (o, e) =>
+            {
+                Program.AnnounceProgress(sim, ref progressHistory, historyLength, startTime);
+            };
+            t.Start();
+
+            sim.RunSimulation();
+            t.Stop();
+
             var leavesScores = (from l in DeepSimulator.GetLeaves(root)
                                 let r = _openerDriver.GetResultScore(l)
                                 where r.state == ResultState.Conclusive
@@ -287,6 +310,11 @@ namespace WeeabuCalculator
             }
         }
 
-
+        public override void HandleArguments(string[] args)
+        {
+            if (args.Length == 0) _endTime = 300;
+            else _endTime = float.Parse(args[0]);
+            
+        }
     }
 }
