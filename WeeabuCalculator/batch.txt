@@ -1,0 +1,89 @@
+Root:
+  - 
+    Name: Base Skill Speed
+    Player: 
+      Speed: 815
+    Job: Samurai
+    Driver: SamuraiRotationSimulation
+    DriverArguments:
+      - 300
+  - 
+    Name: Skill Speed +1
+    Player:
+      Speed: 882
+    Job: Samurai
+    Driver: SamuraiRotationSimulation
+    DriverArguments:
+      - 300
+  - 
+    Name: Skill Speed +2
+    Player:
+      Speed: 965
+    Job: Samurai
+    Driver: SamuraiRotationSimulation
+    DriverArguments:
+      - 300
+  - 
+    Name: Skill Speed +3
+    Player:
+      Speed: 1049
+    Job: Samurai
+    Driver: SamuraiRotationSimulation
+    DriverArguments:
+      - 300
+  - 
+    Name: Skill Speed +4
+    Player:
+      Speed: 1116
+    Job: Samurai
+    Driver: SamuraiRotationSimulation
+    DriverArguments:
+      - 300
+  - 
+    Name: Skill Speed +5
+    Player:
+      Speed: 1182
+    Job: Samurai
+    Driver: SamuraiRotationSimulation
+    DriverArguments:
+      - 300
+  - 
+    Name: Skill Speed +6
+    Player:
+      Speed: 1266
+    Job: Samurai
+    Driver: SamuraiRotationSimulation
+    DriverArguments:
+      - 300
+  - 
+    Name: Skill Speed +7
+    Player:
+      Speed: 1333
+    Job: Samurai
+    Driver: SamuraiRotationSimulation
+    DriverArguments:
+      - 300
+  - 
+    Name: Skill Speed +8
+    Player:
+      Speed: 1416
+    Job: Samurai
+    Driver: SamuraiRotationSimulation
+    DriverArguments:
+      - 300
+  - 
+    Name: Skill Speed +9
+    Player:
+      Speed: 1483
+    Job: Samurai
+    Driver: SamuraiRotationSimulation
+    DriverArguments:
+      - 300
+  - 
+    Name: Skill Speed +10
+    Player:
+      Speed: 1550
+    Job: Samurai
+    Driver: SamuraiRotationSimulation
+    DriverArguments:
+      - 300
