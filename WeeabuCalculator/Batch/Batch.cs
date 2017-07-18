@@ -39,8 +39,9 @@ namespace WeeabuCalculator
                                             var constructor = t.GetConstructor(new Type[] { typeof(JobMechanics) });
                                             if (constructor != null)
                                             {
-                                                var driver = constructor.Invoke(new object[] { job });
-                                                return (DeepSimulationDriver) driver;
+                                                var driver = (DeepSimulationDriver) constructor.Invoke(new object[] { job });
+                                                driver.HandleArguments(batch.DriverArguments);
+                                                return driver;
                                             }
                                         }
                                     }

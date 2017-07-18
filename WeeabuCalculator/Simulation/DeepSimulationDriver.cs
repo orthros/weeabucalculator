@@ -9,12 +9,10 @@ namespace WeeabuCalculator
     public abstract class DeepSimulationDriver : SimulationDriver
     {
         public int TopSimulationsToKeep
-        { get; private set; }
+        { get; protected set; }
 
-        protected DeepSimulationDriver(JobMechanics job, int topSimulationsToKeep) : base(job)
-        {
-            TopSimulationsToKeep = topSimulationsToKeep;
-        }
+        protected DeepSimulationDriver(JobMechanics job) : base(job)
+        { }
 
         public abstract void HandleArguments(string[] args);
 

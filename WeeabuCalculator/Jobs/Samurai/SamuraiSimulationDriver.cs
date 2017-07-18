@@ -14,12 +14,13 @@ namespace WeeabuCalculator
 
         private PlayerAction[] SpecialHagakure;
 
-        private float _endTime;
+        public float EndTime { get; private set; }
         private SamuraiOpenerSimulationDriver _openerDriver;
 
-        public SamuraiSimulationDriver(JobMechanics job) : base(job, 10)
+        public SamuraiSimulationDriver(JobMechanics job) : base(job)
         {
-            _endTime = 300;
+            EndTime = 300;
+            TopSimulationsToKeep = 100;
             // Shinten damage + 1 Guren per 3 hagakures
             var hagakureOpportunityDamage = 300 / 25 + ((800 / 50) / 3);
             SpecialHagakure = new PlayerAction[3];
@@ -68,7 +69,7 @@ namespace WeeabuCalculator
             // include all other DPS but count the buff window more, and subtract the opportunity cost from CDs.
             var score = result.Damage.DPS + buffWindowDPS * 0.15f;
 
-            return (result.CurrentTime >= _endTime ? ResultState.Conclusive : ResultState.Inconclusive, score);
+            return (result.CurrentTime >= EndTime ? ResultState.Conclusive : ResultState.Inconclusive, score);
         }
 
         private bool OpenerBuffsApplied(SimulationState state)
@@ -286,7 +287,7 @@ namespace WeeabuCalculator
                 Console.WriteLine($"{(DateTime.Now - startTime):hh\\:mm\\:ss} :: New top openner found! score: {e.score}");
             };
 
-            var timerStep = 10f;
+            var timerStep = 30f;
             var historyLength = 10;
             var t = new System.Timers.Timer(timerStep * 1000);
             var progressHistory = new Queue<(long progress, DateTime time)>(historyLength);
@@ -304,7 +305,7 @@ namespace WeeabuCalculator
                                 where r.state == ResultState.Conclusive
                                 orderby r.score descending
                                 select (r.state, r.score, l));
-            foreach (var l in leavesScores)
+            foreach (var l in leavesScores.Take(100))
             {
                 yield return l;
             }
@@ -312,9 +313,13 @@ namespace WeeabuCalculator
 
         public override void HandleArguments(string[] args)
         {
-            if (args.Length == 0) _endTime = 300;
-            else _endTime = float.Parse(args[0]);
-            
+            if (args.Length == 0) EndTime = 300;
+            else
+            {
+                EndTime = float.Parse(args[0]);
+                TopSimulationsToKeep = int.Parse(args[1]);
+            }
+
         }
     }
 }

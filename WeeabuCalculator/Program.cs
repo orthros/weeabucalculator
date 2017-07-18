@@ -55,7 +55,7 @@ namespace WeeabuCalculator
                 Console.WriteLine($"{(DateTime.Now - startTime):hh\\:mm\\:ss} :: New top openner found! score: {e.score}");
             };
 
-            var timerStep = 10f;
+            var timerStep = 30f;
             var historyLength = 10;
             var t = new System.Timers.Timer(timerStep * 1000);
             var progressHistory = new Queue<(long progress, DateTime time)>(historyLength);
@@ -67,13 +67,25 @@ namespace WeeabuCalculator
 
             Console.WriteLine("Beginning simulation...");
             sim.RunSimulation();
+            t.Stop();
 
+            var dir = $"batchresults/{b.Name}/";
+            var filename = $"{dir}{DateTime.Now:yyyy-mm-dd hh-mm-ss}.result";
+            Console.WriteLine($"Saving output to {filename}");
+            Directory.CreateDirectory(dir);
+            using (var w = new StreamWriter(filename))
+            {
+                foreach (var result in (from l in TreeSimulation.GetLeaves(root) let r = driver.GetResultScore(l) orderby r.score descending select (state: l, score: r.score)))
+                {
+                    w.WriteLine($"{result.score} || {result.state.AllActions.HistoryString}");
+                }
+            }
         }
 
         public static void AnnounceProgress(DeepSimulator sim, ref Queue<(long progress, DateTime time)> progressHistory, int historyLength, DateTime startTime)
         {
             var pctComplete = sim.CompletedStartingPaths / (double)sim.TotalStartingPoints * 100;
-            if (pctComplete == 0) return;
+            if (double.IsNaN(pctComplete) && pctComplete == 0) return;
 
             progressHistory.Enqueue((sim.CompletedStartingPaths, DateTime.Now));
             if (progressHistory.Count > historyLength) progressHistory.Dequeue();
@@ -81,7 +93,7 @@ namespace WeeabuCalculator
             var durationOfHistory = progressHistory.First().time - progressHistory.Last().time;
             var completeTime = (sim.TotalStartingPoints - sim.CompletedStartingPaths) * (durationOfHistory.TotalSeconds / progressOverHistory);
             if (double.IsNaN(completeTime)) completeTime = 0;
-            Console.WriteLine($"{(DateTime.Now - startTime):hh\\:mm\\:ss} :: {sim.CompletedStartingPaths}/{sim.TotalStartingPoints}, {pctComplete:0.00}%, complete in {TimeSpan.FromSeconds(completeTime):hh\\:mm}");
+            Console.WriteLine($"{(DateTime.Now - startTime):hh\\:mm\\:ss} :: {sim.CompletedStartingPaths}/{sim.TotalStartingPoints}, {pctComplete:0.00}%, complete in {TimeSpan.FromSeconds(completeTime):hh\\:mm\\:ss}");
         }
 
         public static void test()

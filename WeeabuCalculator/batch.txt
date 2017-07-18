@@ -7,6 +7,7 @@ Root:
     Driver: SamuraiRotationSimulation
     DriverArguments:
       - 300
+      - 1000
   - 
     Name: Skill Speed +1
     Player:
@@ -15,6 +16,7 @@ Root:
     Driver: SamuraiRotationSimulation
     DriverArguments:
       - 300
+      - 1000
   - 
     Name: Skill Speed +2
     Player:
@@ -23,6 +25,7 @@ Root:
     Driver: SamuraiRotationSimulation
     DriverArguments:
       - 300
+      - 1000
   - 
     Name: Skill Speed +3
     Player:
@@ -31,6 +34,7 @@ Root:
     Driver: SamuraiRotationSimulation
     DriverArguments:
       - 300
+      - 1000
   - 
     Name: Skill Speed +4
     Player:
@@ -39,6 +43,7 @@ Root:
     Driver: SamuraiRotationSimulation
     DriverArguments:
       - 300
+      - 1000
   - 
     Name: Skill Speed +5
     Player:
@@ -47,6 +52,7 @@ Root:
     Driver: SamuraiRotationSimulation
     DriverArguments:
       - 300
+      - 1000
   - 
     Name: Skill Speed +6
     Player:
@@ -55,6 +61,7 @@ Root:
     Driver: SamuraiRotationSimulation
     DriverArguments:
       - 300
+      - 1000
   - 
     Name: Skill Speed +7
     Player:
@@ -63,6 +70,7 @@ Root:
     Driver: SamuraiRotationSimulation
     DriverArguments:
       - 300
+      - 1000
   - 
     Name: Skill Speed +8
     Player:
@@ -71,6 +79,7 @@ Root:
     Driver: SamuraiRotationSimulation
     DriverArguments:
       - 300
+      - 1000
   - 
     Name: Skill Speed +9
     Player:
@@ -79,6 +88,7 @@ Root:
     Driver: SamuraiRotationSimulation
     DriverArguments:
       - 300
+      - 1000
   - 
     Name: Skill Speed +10
     Player:
@@ -87,3 +97,4 @@ Root:
     Driver: SamuraiRotationSimulation
     DriverArguments:
       - 300
+      - 1000
