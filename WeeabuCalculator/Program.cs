@@ -17,6 +17,87 @@ namespace WeeabuCalculator
 
         static void Main(string[] args)
         {
+            Console.WriteLine("Reading batch.txt file...");
+            IEnumerable<Batch> batches = null;
+            try
+            {
+                batches = Batch.ReadFile("batch.txt");
+            }
+            catch (Exception ex) { }
+
+            if (batches == null)
+            {
+                Console.WriteLine("batches.txt not read!");
+                return;
+            }
+
+            Console.WriteLine($"Found {batches.Count()} batches.");
+
+            foreach (var b in batches)
+                RunBatch(b);
+
+        }
+
+        private static void RunBatch(Batch b)
+        {
+            Console.WriteLine($"Running batch {b}");
+            Console.WriteLine("Building batch objects...");
+            var job = Batch.BuildJob(b);
+            var player = PlayerInfo.BuildPlayer(b.Player, job);
+            var driver = Batch.BuildDriver(b, job);
+            
+            var startTime = DateTime.Now;
+            var root = new SimulationState(player, null);
+            var sim = new DeepSimulator(player, new SamuraiSimulationDriver(job), Console.Out, root);
+            
+            sim.FoundTopPerformer += (s, e) =>
+            {
+                Console.WriteLine($"{(DateTime.Now - startTime):hh\\:mm\\:ss} :: New top openner found! score: {e.score}");
+            };
+
+            var timerStep = 30f;
+            var historyLength = 10;
+            var t = new System.Timers.Timer(timerStep * 1000);
+            var progressHistory = new Queue<(long progress, DateTime time)>(historyLength);
+            t.Elapsed += (o, e) =>
+            {
+                AnnounceProgress(sim, ref progressHistory, historyLength, startTime);
+            };
+            t.Start();
+
+            Console.WriteLine("Beginning simulation...");
+            sim.RunSimulation();
+            t.Stop();
+
+            var dir = $"batchresults/{b.Name}/";
+            var filename = $"{dir}{DateTime.Now:yyyy-mm-dd hh-mm-ss}.result";
+            Console.WriteLine($"Saving output to {filename}");
+            Directory.CreateDirectory(dir);
+            using (var w = new StreamWriter(filename))
+            {
+                foreach (var result in (from l in TreeSimulation.GetLeaves(root) let r = driver.GetResultScore(l) orderby r.score descending select (state: l, score: r.score)))
+                {
+                    w.WriteLine($"{result.score} || {result.state.AllActions.HistoryString}");
+                }
+            }
+        }
+
+        public static void AnnounceProgress(DeepSimulator sim, ref Queue<(long progress, DateTime time)> progressHistory, int historyLength, DateTime startTime)
+        {
+            var pctComplete = sim.CompletedStartingPaths / (double)sim.TotalStartingPoints * 100;
+            if (double.IsNaN(pctComplete) && pctComplete == 0) return;
+
+            progressHistory.Enqueue((sim.CompletedStartingPaths, DateTime.Now));
+            if (progressHistory.Count > historyLength) progressHistory.Dequeue();
+            var progressOverHistory = progressHistory.First().progress - progressHistory.Last().progress;
+            var durationOfHistory = progressHistory.First().time - progressHistory.Last().time;
+            var completeTime = (sim.TotalStartingPoints - sim.CompletedStartingPaths) * (durationOfHistory.TotalSeconds / progressOverHistory);
+            if (double.IsNaN(completeTime)) completeTime = 0;
+            Console.WriteLine($"{(DateTime.Now - startTime):hh\\:mm\\:ss} :: {sim.CompletedStartingPaths}/{sim.TotalStartingPoints}, {pctComplete:0.00}%, complete in {TimeSpan.FromSeconds(completeTime):hh\\:mm\\:ss}");
+        }
+
+        public static void test()
+        { 
             var job = new SamuraiJobMechanics();
             var player = new Player(job)
             {
@@ -77,7 +158,8 @@ namespace WeeabuCalculator
             Console.WriteLine("Running rotation simulation...");
 
             _startTime = DateTime.Now;
-            var sim = new DeepSimulator(player, new SamuraiSimulationDriver(job, 300), Console.Out, root);
+            var sim = new DeepSimulator(player, new SamuraiSimulationDriver(job), Console.Out, root);
+            
 
             sim.FoundTopPerformer += (s, e) =>
             {

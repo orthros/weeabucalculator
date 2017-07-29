@@ -14,7 +14,7 @@ namespace WeeabuCalculator
         { get { return (from ap in GetHistory() select ap.Action); } }
 
         public string HistoryString
-        { get { return string.Join(" > ", (from ap in History let apString = (ap.GCD ? ap.ToString() : $"[{ap.ToString()}]") select apString)); } }
+        { get { return string.Join(" > ", History); } }
 
         public IEnumerable<PlayerAction> ReverseHistory
         { get { return (from ap in GetReverseHistory() select ap.Action); } }

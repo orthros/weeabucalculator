@@ -40,6 +40,7 @@ namespace WeeabuCalculator
         }
 
         public event EventHandler<(float score, SimulationState state)> FoundTopPerformer;
+        public event EventHandler StatisticsChanged;
 
         public DeepSimulationDriver Driver
         { get; private set; }
@@ -60,17 +61,28 @@ namespace WeeabuCalculator
             var startingPoints = Driver.GenerateInitialStates(RootState).ToArray();
             TotalStartingPoints = startingPoints.Length;
             AverageStartingPointLength = (from sp in startingPoints select sp.Item3.StepNumber).Sum() / (double)TotalStartingPoints;
+            OnStatisticsChanged();
             Output.WriteLine($"Discovered {TotalStartingPoints} starting points. Beginning Depth-first simulation. ");
 
             var tasks = new List<Task>((int)TotalStartingPoints);
             foreach (var s in (from n in startingPoints orderby n.Item2 descending select n.Item3))
             {
-                var t = new Task(() => { RunSimulation(s); CompletedStartingPaths++; });
+                var t = new Task(() =>
+                {
+                    RunSimulation(s);
+                    CompletedStartingPaths++;
+                    OnStatisticsChanged();
+                });
                 t.Start();
                 tasks.Add(t);
             }
 
             Task.WaitAll(tasks.ToArray());
+        }
+
+        protected virtual void OnStatisticsChanged()
+        {
+            if (StatisticsChanged != null) StatisticsChanged.Invoke(this, null);
         }
 
         private void RunSimulation(SimulationState step)
@@ -85,6 +97,7 @@ namespace WeeabuCalculator
                 NodesInAction++;
                 NumSplits += nextSteps.Length;
                 AverageSplits = NumSplits / (double)NodesInAction;
+                OnStatisticsChanged();
 
                 var nextStep = s.Item2;
                 var result = s.Item1;
@@ -95,6 +108,7 @@ namespace WeeabuCalculator
                         CompletedPaths++;
                         TotalCompleteLength += nextStep.StepNumber;
                         AverageCompleteLength = TotalCompleteLength / (double)CompletedPaths;
+                        OnStatisticsChanged();
 
                         RecordTopValue(nextStep, result.score);
 
@@ -107,6 +121,7 @@ namespace WeeabuCalculator
                         break;
                     case ResultState.Dead:
                         DeadPaths++;
+                        OnStatisticsChanged();
                         break;
                 }
             }
@@ -133,10 +148,10 @@ namespace WeeabuCalculator
 
         private void RecordTopValue(SimulationState result, float score)
         {
-            if (TopScores == null) return; 
+            if (TopScores == null) return;
 
             var foundTopPerformer = !TopScores.TopScore.HasValue || score > TopScores.TopScore.Value.score;
-            if (foundTopPerformer && FoundTopPerformer != null) FoundTopPerformer.Invoke(this, (score, result)); 
+            if (foundTopPerformer && FoundTopPerformer != null) FoundTopPerformer.Invoke(this, (score, result));
 
             var oustedValue = TopScores.Insert(result, score);
             if (oustedValue.HasValue)

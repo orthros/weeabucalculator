@@ -12,8 +12,10 @@ namespace WeeabuCalculator
         public static float BUFF_WINDOW_MIN = 12;
         public static int MAX_GCD_STEPS = 13;
 
-        public SamuraiOpenerSimulationDriver(JobMechanics job) : base(job, -1)
-        { }
+        public SamuraiOpenerSimulationDriver(JobMechanics job) : base(job)
+        {
+            TopSimulationsToKeep = -1;
+        }
 
         public override (ResultState state, float score) GetResultScore(SimulationState result)
         {
@@ -51,7 +53,6 @@ namespace WeeabuCalculator
                 // Guren's opportunity cost loss is the damage it does minus the cost of kenki.
                 cdOpportunityCostLoss += (((result.Cooldowns.GetApplicationTime("Hissatsu: Guren") ?? 0) / 120) * (800 - (50 / 25 * 300)) * 1.21f) / result.CurrentTime;
             }
-
 
             var buffWindowDPS = (buffWindowDamage / (result.CurrentTime - BUFF_WINDOW_MIN));
 
@@ -177,6 +178,11 @@ namespace WeeabuCalculator
             if (inconclusiveSteps.Any())
                 foreach (var n in inconclusiveSteps)
                     foreach (var r in GenerateInitialStates(n)) yield return r;
+        }
+
+        public override void HandleArguments(string[] args)
+        {
+            throw new NotImplementedException();
         }
     }
 }

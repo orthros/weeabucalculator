@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace WeeabuCalculator
 {
+    [DeepSimulationDriver("SamuraiRotationSimulation")]
     public class SamuraiSimulationDriver : DeepSimulationDriver
     {
         public static float BUFF_WINDOW_MAX = 24;
@@ -13,12 +14,13 @@ namespace WeeabuCalculator
 
         private PlayerAction[] SpecialHagakure;
 
-        private float _endTime;
+        public float EndTime { get; private set; }
         private SamuraiOpenerSimulationDriver _openerDriver;
 
-        public SamuraiSimulationDriver(JobMechanics job, float endTime) : base(job, 10)
+        public SamuraiSimulationDriver(JobMechanics job) : base(job)
         {
-            _endTime = endTime;
+            EndTime = 300;
+            TopSimulationsToKeep = 100;
             // Shinten damage + 1 Guren per 3 hagakures
             var hagakureOpportunityDamage = 300 / 25 + ((800 / 50) / 3);
             SpecialHagakure = new PlayerAction[3];
@@ -67,7 +69,7 @@ namespace WeeabuCalculator
             // include all other DPS but count the buff window more, and subtract the opportunity cost from CDs.
             var score = result.Damage.DPS + buffWindowDPS * 0.15f;
 
-            return (result.CurrentTime >= _endTime ? ResultState.Conclusive : ResultState.Inconclusive, score);
+            return (result.CurrentTime >= EndTime ? ResultState.Conclusive : ResultState.Inconclusive, score);
         }
 
         private bool OpenerBuffsApplied(SimulationState state)
@@ -276,6 +278,28 @@ namespace WeeabuCalculator
 
         public override IEnumerable<(ResultState state, float score, SimulationState step)> GenerateInitialStates(SimulationState root)
         {
+            var sim = new DeepSimulator(root.Player, new SamuraiOpenerSimulationDriver(root.Player.Job), Console.Out, root);
+
+            DateTime startTime = DateTime.Now;
+
+            sim.FoundTopPerformer += (s, e) =>
+            {
+                Console.WriteLine($"{(DateTime.Now - startTime):hh\\:mm\\:ss} :: New top openner found! score: {e.score}");
+            };
+
+            var timerStep = 30f;
+            var historyLength = 10;
+            var t = new System.Timers.Timer(timerStep * 1000);
+            var progressHistory = new Queue<(long progress, DateTime time)>(historyLength);
+            t.Elapsed += (o, e) =>
+            {
+                Program.AnnounceProgress(sim, ref progressHistory, historyLength, startTime);
+            };
+            t.Start();
+
+            sim.RunSimulation();
+            t.Stop();
+
             var leavesScores = (from l in DeepSimulator.GetLeaves(root)
                                 let r = _openerDriver.GetResultScore(l)
                                 where r.state == ResultState.Conclusive
@@ -287,6 +311,15 @@ namespace WeeabuCalculator
             }
         }
 
+        public override void HandleArguments(string[] args)
+        {
+            if (args.Length == 0) EndTime = 300;
+            else
+            {
+                EndTime = float.Parse(args[0]);
+                TopSimulationsToKeep = int.Parse(args[1]);
+            }
 
+        }
     }
 }
