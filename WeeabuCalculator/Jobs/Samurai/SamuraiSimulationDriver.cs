@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace WeeabuCalculator
 {
-    [DeepSimulationDriver("SamuraiRotationSimulation")]
+    [SimulationDriver("SamuraiRotationSimulation")]
     public class SamuraiSimulationDriver : DeepSimulationDriver
     {
         public static float BUFF_WINDOW_MAX = 24;
@@ -17,6 +18,7 @@ namespace WeeabuCalculator
         public float EndTime { get; private set; }
         private SamuraiOpenerSimulationDriver _openerDriver;
 
+        [ImportingConstructor]
         public SamuraiSimulationDriver(JobMechanics job) : base(job)
         {
             EndTime = 300;

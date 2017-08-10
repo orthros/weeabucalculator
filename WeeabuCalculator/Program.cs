@@ -42,9 +42,12 @@ namespace WeeabuCalculator
         {
             Console.WriteLine($"Running batch {b}");
             Console.WriteLine("Building batch objects...");
-            var job = Batch.BuildJob(b);
+            JobMechanicFactory jmf = new JobMechanicFactory();
+            var job = jmf.BuildJobFromBatch(b);
             var player = PlayerInfo.BuildPlayer(b.Player, job);
-            var driver = Batch.BuildDriver(b, job);
+
+            DeepSimulationDriverFactory dsdf = new DeepSimulationDriverFactory(job);
+            var driver = dsdf.BuildJobFromBatch(b);
             
             var startTime = DateTime.Now;
             var root = new SimulationState(player, null);

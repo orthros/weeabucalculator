@@ -8,14 +8,14 @@ namespace WeeabuCalculator
 {
     public class PlayerInfo
     {
-        public int Speed { get; set; }
-        public int Determination { get; set; }
-        public int CriticalHitRating { get; set; }
-        public int DirectHitRating { get; set; }
-        public int AttackPower { get; set; }
-        public int WeaponDamage { get; set; }
-        public float AutoAttackDamage { get; set; }
-        public float AutoAttackDelay { get; set; }
+        public int Speed { get; private set; }
+        public int Determination { get; private set; }
+        public int CriticalHitRating { get; private set; }
+        public int DirectHitRating { get; private set; }
+        public int AttackPower { get; private set; }
+        public int WeaponDamage { get; private set; }
+        public float AutoAttackDamage { get; private set; }
+        public float AutoAttackDelay { get; private set; }
 
         public static Player BuildPlayer(PlayerInfo p, JobMechanics job)
         {

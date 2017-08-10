@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace WeeabuCalculator
 {
+    [SimulationDriver("SamuraiOpenerSimulation")]
     public class SamuraiOpenerSimulationDriver : DeepSimulationDriver
     {
         public static float BUFF_WINDOW_MAX = 24;
         public static float BUFF_WINDOW_MIN = 12;
         public static int MAX_GCD_STEPS = 13;
 
+        [ImportingConstructor]
         public SamuraiOpenerSimulationDriver(JobMechanics job) : base(job)
         {
             TopSimulationsToKeep = -1;

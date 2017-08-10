@@ -36,6 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.ValueTuple, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
@@ -52,11 +53,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Batch\Batch.cs" />
+    <Compile Include="JobMechanicsFactory.cs" />
     <Compile Include="Batch\PlayerInfo.cs" />
+    <Compile Include="DeepSimulatorDriverFactory.cs" />
+    <Compile Include="Jobs\IJobMechanicsMetadata.cs" />
     <Compile Include="Jobs\JobMechanicsAttribute.cs" />
     <Compile Include="Simulation\DeepSimulationDriverAttribute.cs" />
     <Compile Include="Jobs\Samurai\SamuraiSimulationDriver.cs" />
     <Compile Include="Jobs\Samurai\SamuraiOpenerSimulationDriver.cs" />
+    <Compile Include="Simulation\ISimulationDriverMetadata.cs" />
     <Compile Include="Simulation\SimulationDriver.cs" />
     <Compile Include="Simulation\TopScoreTracker.cs" />
     <Compile Include="State\CooldownTracker.cs" />
