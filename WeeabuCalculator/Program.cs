@@ -48,7 +48,7 @@ namespace WeeabuCalculator
             
             var startTime = DateTime.Now;
             var root = new SimulationState(player, null);
-            var sim = new DeepSimulator(player, new SamuraiSimulationDriver(job), Console.Out, root);
+            var sim = new DeepSimulator(player, driver, Console.Out, root);
             
             sim.FoundTopPerformer += (s, e) =>
             {
